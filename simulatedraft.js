@@ -45,10 +45,18 @@ const simulate = async (numteams=12, rounds=16, strategy='basic') => {
     var teams = []
     for (let i = 0; i < numteams; i++) {
         let strategyParams = {
-            count: 5,
-            lambda: (candidate) => (1/candidate.ownership.averageDraftPosition)
+            count: 50,
+            lambda: (candidate) => (1/candidate.ownership.averageDraftPosition),
+            positionWeights: {
+                1: 4, //qb
+                2: 8, //rb
+                3: 12, //wr
+                4: 3, //te
+                5: 1, //k
+                16: 1, //dst
+            }
         };
-        let team = new Team('team' + i, basicdrafter.draftLowestXADPstartersFirst, strategyParams);
+        let team = new Team('team' + i, basicdrafter.draftZeroRBNaive, strategyParams);
         teams.push(team);
     }
 
