@@ -1,42 +1,9 @@
 var basicdrafter = require('./basicdrafter');
 var adp = require('./adpranks');
+var draft = require('./draft');
 
-class Team {
-
-    constructor(name, draftStrategy, strategyParams={}) {
-        this.name = name; // Team name
-        this.draftStrategy = draftStrategy; // fxn responsible for dictating how this team will decide who to draft
-        this.strategyParams = strategyParams // for draft strategies that require extra, unique params
-        this.players = []; // An array to store drafted players
-    }
-
-    // given the list of available players, apply the draft strategy and pick the player to draft,
-    // returns the name of the player drafted
-    draft (available) {
-        let selection = this.draftStrategy(this.players, available, this.strategyParams);
-        // add selection to the team
-        this.players.push(selection);
-        
-        //return seelction so it can be removed from available players
-        //TODO: maybe only want to return the key for the selection?
-        return selection
-    }
-  
-    // Method to get the drafted players
-    getPlayers() {
-      return this.players;
-    }
-
-    // Returns a list of just player names for printing
-    prettyTeam() {
-        var playerNames = [];
-        for (let player of this.players) {
-            playerNames.push(player.fullName);
-        }
-        return playerNames;
-    }
-  }
-
+var Team = draft.Team;
+var Draft = draft.Draft;
 
 //simulates a draft with only bots, for now all doing the basic draft strategy
 const simulate = async (numteams=12, rounds=16, strategy='basic') => {
@@ -45,7 +12,7 @@ const simulate = async (numteams=12, rounds=16, strategy='basic') => {
     var teams = []
     for (let i = 0; i < numteams; i++) {
         let strategyParams = {
-            count: 50,
+            count: 5,
             lambda: (candidate) => (1/candidate.ownership.averageDraftPosition),
             positionWeights: {
                 1: 4, //qb
@@ -56,7 +23,7 @@ const simulate = async (numteams=12, rounds=16, strategy='basic') => {
                 16: 1, //dst
             }
         };
-        let team = new Team('team' + i, basicdrafter.draftZeroRBNaive, strategyParams);
+        let team = new Team('team' + i, basicdrafter.draftLowestADPstartersFirst, strategyParams);
         teams.push(team);
     }
 
