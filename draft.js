@@ -26,6 +26,7 @@ class Draft {
      * Useful for determining if the team is a bot or human.
      */
     nextUp() {
+        //TODO: return null if draft is over
         return this.teams[this.currentTeam];
     }
 
@@ -48,6 +49,11 @@ class Draft {
             // round not over, change current team
             this.currentTeam += this.round % 2 == 1 ? 1 : -1
         }
+    }
+
+    //for use when a human is picking for the current team
+    manualSelection(selection) {
+        //TODO: implement
     }
 }
 
@@ -137,8 +143,18 @@ class Team {
 const dummyImpl = () => {
     var myDraft = new Draft();
 
-    while (myDraft.nextUp().isBot()) {
+    let currentTeam = myDraft.nextUp();
+    while(myDraft.nextUp() != null) {
+        if (myDraft.nextUp().isBot()) {
+            //bot will draft
+            myDraft.makeSelection();
+        } else {
+            //human must draft
+            //LOGIC FOR HUMAN DRAFT PICK GOES HERE
+            let selection = humanPick(myDraft.available);
+            myDraft.manualSelection(selection);
 
+        }
     }
 
 }
